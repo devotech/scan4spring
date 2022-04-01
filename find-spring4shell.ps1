@@ -12,29 +12,41 @@ If(!(test-path \\$server\$path))
 }
 
 Start-Transcript -Path $logfile -NoClobber
-
+[array]$FullItemsArray=@()
 foreach ($computer in $computerNames) {
-    $computer.name # Show computername
+    "Checking $($computer.name)" | write-host # Show computername
     if ((Test-Connection -computername $computer.name -Quiet) -eq $true) {
-        Invoke-Command -ComputerName $computer.name -ScriptBlock {
+        "$($computer.name) is online" | write-host
+        $FullItemsArray += Invoke-Command -ComputerName $computer.name -ScriptBlock {
+            [array]$ComputerItemsArray=@()
             $drives = Get-PSDrive -PSProvider FileSystem
             foreach ($drive in $drives) {
                 if ($drive.Name -notin $using:ignoreDrives) {
                     $items = Get-ChildItem -Path $drive.Root -Filter $using:keyword -ErrorAction SilentlyContinue -File -Recurse
                     foreach ($item in $items) {
-                        $item.FullName # Show all files found with full drive and path
+                        $item.FullName | write-host # Show all files found with full drive and path
+                        $obj = New-Object -TypeName psobject
+                        $obj | Add-Member -MemberType NoteProperty -Name online -Value $true
+                        $obj | Add-Member -MemberType NoteProperty -Name path -Value $($item.FullName)
+                        $ComputerItemsArray += $obj
                     }
                 }
             }
+            return $ComputerItemsArray
         }
     }
     else{
-     "$computer is offline"
+      "$($computer.name) is offline" | write-host
+      $obj = New-Object -TypeName psobject
+      $obj | Add-Member -MemberType NoteProperty -Name online -Value $false
+      $obj | Add-Member -MemberType NoteProperty -Name path -Value $null
+      $obj | Add-Member -MemberType NoteProperty -Name PSComputerName -Value $($computer.name)
+      $FullItemsArray += $obj
      }
 }
 
 Stop-Transcript
-
+$FullItemsArray | Sort-Object -Property Online,PSComputername |Select-Object Online,PScomputername, Path |Format-Table
 <#
 
 This is a quick script, don't expect it to be too neat.
