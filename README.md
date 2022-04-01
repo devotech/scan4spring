@@ -16,6 +16,7 @@ logfile : if you edit this, comment out the server and path vars. <br/>
 ## Remediations actions and additional info: 
 official communication from spring: https://spring.io/blog/2022/03/31/spring-framework-rce-early-announcement <br/>
 Mitigation advice (lunasec) : https://www.lunasec.io/docs/blog/spring-rce-vulnerabilities/#applying-mitigations <br/>
+WAF mitigation: : https://noise.getoto.net/2022/03/31/waf-mitigations-for-spring4shell/ <br/>
 <br/>
 Report 1: Cyber Kendra - SpringShell: Spring Core RCE 0-day Vulnerability https://www.cyberkendra.com/2022/03/springshell-rce-0-day-vulnerability.html <br/>
 Report 2: Cyber Kendra - Spring4Shell Details and Exploit code leaked https://www.cyberkendra.com/2022/03/spring4shell-details-and-exploit-code.html <br/>
